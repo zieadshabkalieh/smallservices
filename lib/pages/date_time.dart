@@ -144,7 +144,7 @@ class _DateAndTimeState extends State<DateAndTime> {
                 'username' : user.displayName,
                 'email' : user.email,
                 'name': widget.name,
-                'image_url': widget.imageURL,
+                'imageURL': widget.imageURL,
                 'question': widget.question,
                 'date' : _days[_selectedDay],
                 'time' : _selectedHour,

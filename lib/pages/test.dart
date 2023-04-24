@@ -260,7 +260,7 @@ class _CollectionEntryPageState extends State<CollectionEntryPage> {
                     if (_formKey.currentState!.validate()) {
                       databaseReference.child('Services').push().set({
                         'name': _serviceName,
-                        'image_url': _imageUrl,
+                        'imageURL': _imageUrl,
                         'question': _question,
                         'sub_services': _subServices,
                       });

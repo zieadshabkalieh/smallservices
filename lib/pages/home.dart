@@ -6,6 +6,7 @@ import 'package:smallservices/animation/FadeAnimation.dart';
 import 'package:smallservices/pages/account.dart';
 import 'package:smallservices/pages/drawer.dart';
 import 'package:smallservices/pages/notifications.dart';
+import 'package:smallservices/pages/reportScreen.dart';
 import 'package:smallservices/pages/viewServices.dart';
 import 'package:smallservices/pages/workers.dart';
 
@@ -28,8 +29,10 @@ class DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
-  final databaseReference = FirebaseDatabase.instance.ref();
+  // final databaseReference = FirebaseDatabase.instance.ref();
   static List<List<String>> services = [];
+  static List<List<String>> orders = [];
+
   // static List<List<String>> users = [];
 
   // List<Service> services = [
@@ -99,6 +102,7 @@ class DashboardScreenState extends State<DashboardScreen> {
             },
           )),
       body: Builder(builder: (BuildContext context) {
+        Size size = MediaQuery.of(context).size;
         if (_selectedIndex == 0) {
           return SingleChildScrollView(
             child: Column(
@@ -107,103 +111,145 @@ class DashboardScreenState extends State<DashboardScreen> {
                 FadeAnimation(
                     1,
                     Padding(
-                padding: EdgeInsets.only(left: 20.0, top: 10.0, right: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                        onPressed: () {},
-                        child: Text(
-                          'عرض الكل',
-                        )),
-                    Text(
-                      'طلباتي',
-                      style: TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                )),
-                FadeAnimation(
-                    1.2,
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Container(
-                        padding: EdgeInsets.all(20.0),
-                        height: 180,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.shade200,
-                              offset: Offset(0, 4),
-                              blurRadius: 10.0,
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                        ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                            itemCount: 2,
-                            itemBuilder:
-                                (BuildContext context, int index) {
-                          return Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      ClipRRect(
-                                          borderRadius: BorderRadius.circular(15.0),
-                                          child: Image.network(
-                                            'https://img.icons8.com/pastel-glyph/1x/person-male--v2.png',
-                                            width: 70,
-                                          )),
-                                      SizedBox(
-                                        width: 15,
-                                      ),
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "name",
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          Text(
-                                            "منظف",
-                                            style: TextStyle(
-                                                color: Colors.black.withOpacity(0.7),
-                                                fontSize: 18),
-                                          ),
-                                        ],
-                                      )
-                                    ],
-                                  );
-                            }),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  color: Colors.blue,
-                                  borderRadius: BorderRadius.circular(15.0)),
-                              child: Center(
-                                  child: Text(
-                                'عرض المزيد',
-                                style: TextStyle(color: Colors.white, fontSize: 18),
+                      padding:
+                          EdgeInsets.only(left: 20.0, top: 10.0, right: 10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ReportScreen()
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                'عرض الكل',
                               )),
-                            )
-                          ],
-                        ),
+                          Text(
+                            'طلباتي',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
                     )),
+                FadeAnimation(
+                  1.2,
+                  FutureBuilder<List<List<String>>>(
+                    future: Auth().getOrders(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<List<String>>> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        if (snapshot.hasData) {
+                          orders = snapshot.data!;
+                          print(orders);
+                          return Container(
+                            height: size.height / 4,
+                            width: size.width - 20,
+                            child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: orders.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 20.0),
+                                    child: Container(
+                                      padding: EdgeInsets.all(20.0),
+                                      height: size.height / 4,
+                                      width: size.width - 110,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.shade200,
+                                            offset: Offset(0, 4),
+                                            blurRadius: 10.0,
+                                          ),
+                                        ],
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          15.0),
+                                                  child: Image.network(
+                                                    orders[index][1],
+                                                    width: 70,
+                                                  )),
+                                              SizedBox(
+                                                width: 15,
+                                              ),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    orders[index][0],
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  Text(
+                                                    "${DateTime.now().year} ${orders[index][3]}",
+                                                    style: TextStyle(
+                                                        color: Colors.black
+                                                            .withOpacity(0.7),
+                                                        fontSize: 18),
+                                                  ),
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                          Container(
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                                color: Colors.blue,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        15.0)),
+                                            child: Center(
+                                                child: Text(
+                                              'عرض المزيد',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 18),
+                                            )),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text(snapshot.error.toString());
+                        }
+                      }
+                      return const Center(child: CircularProgressIndicator());
+                    },
+                  ),
+                ),
+
                 const SizedBox(
                   height: 20,
                 ),
@@ -258,8 +304,8 @@ class DashboardScreenState extends State<DashboardScreen> {
                             itemBuilder: (BuildContext context, int index) {
                               return FadeAnimation(
                                 (1.0 + index) / 4,
-                                serviceContainer(snapshot.data![index][1],
-                                    snapshot.data![index][0], index),
+                                serviceContainer(services[index][1],
+                                    services[index][0], index),
                               );
                             },
                           ),
@@ -278,7 +324,8 @@ class DashboardScreenState extends State<DashboardScreen> {
                     ? FadeAnimation(
                         1.3,
                         Padding(
-                          padding: const EdgeInsets.only(left: 20.0, right: 10.0),
+                          padding:
+                              const EdgeInsets.only(left: 20.0, right: 10.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -304,37 +351,39 @@ class DashboardScreenState extends State<DashboardScreen> {
                         ))
                     : const SizedBox(),
 
-              StreamBuilder<QuerySnapshot>(
-                  stream: Auth.firebaseFirestore.collection('users').snapshots(),
+                StreamBuilder<QuerySnapshot>(
+                  stream:
+                      Auth.firebaseFirestore.collection('users').snapshots(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return CircularProgressIndicator();
                     }
 
-                    users = snapshot.data!.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+                    users = snapshot.data!.docs
+                        .map((doc) => doc.data() as Map<String, dynamic>)
+                        .toList();
                     return Auth.isManager
-                            ? Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                height: 120,
-                                child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: users!.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                          var user = users![index];
-                                      return FadeAnimation(
-                                          (1.0 + index) / 4,
-                                          workerContainer(
-                                              user['username'] ?? '',
-                                              user['imageURL'] ?? '',
-                                            user['career'] ?? '',
+                        ? Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
+                            height: 120,
+                            child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: users!.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  var user = users![index];
+                                  return FadeAnimation(
+                                      (1.0 + index) / 4,
+                                      workerContainer(
+                                          user['username'] ?? '',
+                                          user['imageURL'] ?? '',
+                                          user['career'] ?? '',
                                           user['position'] ?? ''));
-                                    }),
-                              )
-                            : const SizedBox();
+                                }),
+                          )
+                        : const SizedBox();
                   },
-              ),
+                ),
                 const SizedBox(
                   height: 150,
                 ),
@@ -430,8 +479,8 @@ class DashboardScreenState extends State<DashboardScreen> {
                   children: [
                     Text(
                       name,
-                      style:
-                          const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(
                       height: 5,
@@ -442,8 +491,13 @@ class DashboardScreenState extends State<DashboardScreen> {
                     )
                   ],
                 ),
-                SizedBox(width: 60,),
-                Text(pos, style: TextStyle(fontWeight: FontWeight.bold),)
+                SizedBox(
+                  width: 60,
+                ),
+                Text(
+                  pos,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                )
               ]),
         ),
       ),

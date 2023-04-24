@@ -130,6 +130,64 @@ class Auth implements AuthBase {
       return imageUrl;
     }
   }
+
+
+  Future<List<List<String>>> getOrders() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+    var event = await databaseReference.child("Users").child(user!.uid).child('Orders').once();
+    DataSnapshot dataSnapshot = event.snapshot;
+    var values = dataSnapshot.value;
+    List<List<String>> orders = [];
+
+    if (values != null) {
+      if (values is List) {
+        values.forEach((item) {
+          List<String> service = [
+            item["name"].toString(),
+            item["imageURL"].toString(),
+            item["question"].toString(),
+            item["repetition"].toString(),
+            "${item["date"][1]} ${item["date"][0]}",
+            item["time"].toString(),
+          ];
+          if (item.containsKey("0")) {
+            for (var i = 0; i < item.length - 4; i++) {
+              if (item[i.toString()] != null) {
+                service.add(item[i.toString()][0]);
+                service.add(item[i.toString()][1]);
+              }
+            }
+          }
+          orders.add(service);
+        });
+      } else if (values is Map) {
+        values.forEach((key, item) {
+          List<String> service = [
+            item["name"].toString(),
+            item["imageURL"].toString(),
+            item["question"].toString(),
+            item["repetition"].toString(),
+            "${item["date"][1]} ${item["date"][0]}",
+            item["time"].toString(),
+          ];
+          if (item.containsKey("0")) {
+            for (var i = 0; i < item.length - 4; i++) {
+              if (item[i.toString()] != null) {
+                service.add(item[i.toString()][0]);
+                service.add(item[i.toString()][1]);
+              }
+            }
+          }
+          orders.add(service);
+        });
+      }
+    }
+    print(orders);
+    return orders;
+  }
+
+
   @override
   Future<List<List<String>>> getServices() async {
     var event = await databaseReference.child('Services').once();
